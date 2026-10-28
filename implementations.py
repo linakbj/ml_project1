@@ -107,12 +107,110 @@ def least_squares(y, tx):
 
 
 def ridge_regression(y, tx, lambda_):
-    pass
+
+    """
+    Ridge regression using normal equations.
+
+    Arguments:
+        y: Labels, shape (N,)
+        tx: Feature matrix, shape (N, D)
+        lambda_: Regularization parameter
+
+    Returns:
+        w: Optimal weights, shape (D,)
+        loss: MSE evaluated at the optimal weights, without regularization
+    """
+
+    n = len(y)
+    d = tx.shape[1]
+
+    # Compute regularized normal equation components
+    xtx = tx.T @ tx + 2 * n * lambda_ * np.eye(d)
+    xty = tx.T @ y
+
+    # Solve the normal equations
+    w = np.linalg.solve(xtx, xty)
+
+    # Compute final loss without regularization
+    error = y - tx @ w
+    loss = np.sum(error ** 2) / (2 * n)
+
+    return w, loss
 
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
-    pass
+
+    """
+    Logistic regression using gradient descent.
+
+    Arguments:
+        y: Labels in {0, 1}, shape (N,)
+        tx: Feature matrix, shape (N, D)
+        initial_w: Initial weights, shape (D,)
+        max_iters: Number of gradient descent iterations
+        gamma: Learning rate
+
+    Returns:
+        w: Final weights
+        loss: Mean logistic loss evaluated at the final weights
+    """
+
+    w = initial_w.copy()
+    n = len(y)
+
+    # Gradient descent
+    for i in range(max_iters):
+
+        z = tx @ w
+
+        # Compute sigmoid predictions without overflow
+        predictions = np.exp(-np.logaddexp(0, -z))
+        gradient = tx.T @ (predictions - y) / n
+
+        w = w - gamma * gradient
+
+    # Compute final loss
+    z = tx @ w
+    loss = np.mean(np.logaddexp(0, z) - y * z)
+
+    return w, loss
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    pass
+
+    """
+    Regularized logistic regression using gradient descent.
+
+    Arguments:
+        y: Labels in {0, 1}, shape (N,)
+        tx: Feature matrix, shape (N, D)
+        lambda_: Regularization parameter
+        initial_w: Initial weights, shape (D,)
+        max_iters: Number of gradient descent iterations
+        gamma: Learning rate
+
+    Returns:
+        w: Final weights
+        loss: Mean logistic loss at the final weights, without regularization
+    """
+
+    w = initial_w.copy()
+    n = len(y)
+
+    # Gradient descent
+    for i in range(max_iters):
+
+        z = tx @ w
+
+        # Compute sigmoid predictions without overflow
+        predictions = np.exp(-np.logaddexp(0, -z))
+        gradient = tx.T @ (predictions - y) / n
+        gradient = gradient + 2 * lambda_ * w
+
+        w = w - gamma * gradient
+
+    # Compute final loss without regularization
+    z = tx @ w
+    loss = np.mean(np.logaddexp(0, z) - y * z)
+
+    return w, loss
