@@ -1,18 +1,13 @@
 # ML Project 1 — Predicting coronary heart disease (MICHD) from BRFSS data
 
-EPFL CS-433 Machine Learning, Fall 2026. Binary classification of MICHD
-(heart attack / angina) from the Behavioral Risk Factor Surveillance System
-survey (~330'000 respondents, 321 features). Only Python's standard library
-and NumPy are used (matplotlib only for plots in the exploration notebook).
-
 ## Repository structure
 
 | File | Content |
 |------|---------|
-| `implementations.py` | The 6 required methods: `mean_squared_error_gd`, `mean_squared_error_sgd`, `least_squares`, `ridge_regression`, `logistic_regression`, `reg_logistic_regression`. All return `(w, loss)`; regularized methods return the loss **without** the penalty term. |
+| `implementations.py` | The 6 required methods: `mean_squared_error_gd`, `mean_squared_error_sgd`, `least_squares`, `ridge_regression`, `logistic_regression`, `reg_logistic_regression`. All return `(w, loss)`; regularized methods return the loss without the penalty term. |
 | `preprocessing.py` | Feature cleaning: `fit_preprocessing` (learned on training data only) and `apply_preprocessing`. |
 | `train.py` | Model selection on a stratified validation split; writes `validation_results.csv`. |
-| `run.py` | Reads the best configuration from `validation_results.csv`, retrains it on the full training set and writes `submission.csv` (the file submitted to AIcrowd). |
+| `run.py` | Reads the best configuration from `validation_results.csv`, retrains it on the full training set and writes `submission.csv`. |
 | `validation_results.csv` | Every configuration tested and its validation metrics, sorted by F1. |
 | `helpers.py` | Course-provided helpers for loading the data and writing the submission. |
 | `analyze_missing.py` | Statistics on missing values (used for the exploratory analysis). |
@@ -23,7 +18,7 @@ and NumPy are used (matplotlib only for plots in the exploration notebook).
 
 1. Download the data from the
    [AIcrowd challenge](https://www.aicrowd.com/challenges/epfl-machine-learning-project-1)
-   and put the three files (names unchanged) into `data/dataset/`:
+   and put the three files into `data/dataset/`:
 
    ```
    data/dataset/x_train.csv
@@ -31,7 +26,7 @@ and NumPy are used (matplotlib only for plots in the exploration notebook).
    data/dataset/x_test.csv
    ```
 
-2. (Optional, re-runs the model selection, a few minutes)
+2. Optional : re-runs the model selection, a few minutes
 
    ```bash
    python train.py
@@ -48,21 +43,11 @@ and NumPy are used (matplotlib only for plots in the exploration notebook).
 
    This writes `submission.csv` with labels in {-1, 1}.
 
-Requirements: Python ≥ 3.9 and NumPy. All randomness is seeded
-(`seed=42` for the validation split), so the output is deterministic.
-
-To check the required implementations:
-
-```bash
-pip install pytest gitpython
-pytest grading_tests --github_link <path-or-url-of-this-repo>
-```
-
 ## Pipeline
 
 ### 1. Preprocessing (`preprocessing.py`)
 All parameters below are computed on the training data only and then applied
-unchanged to validation and test data (no data leakage).
+unchanged to validation and test data.
 
 1. **Column filtering**: drop features with more than 90% missing values, and
    empty or constant columns.
@@ -111,5 +96,3 @@ Observations:
 
 All configurations and metrics are listed in `validation_results.csv`.
 
-## Authors
-Team for EPFL CS-433, Fall 2026.
