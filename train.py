@@ -127,7 +127,7 @@ def main():
 
     # Compare models and regularization parameters
     for model in ("ridge", "logistic"):
-        for lambda_ in (0.0, 0.001, 0.01):
+        for lambda_ in (0.0001, 0.001, 0.01):
             print(
                 f"Training {model}, lambda={lambda_}...",
                 flush=True,
