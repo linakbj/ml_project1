@@ -1,4 +1,3 @@
-
 import argparse
 import csv
 
@@ -25,12 +24,8 @@ def load_best_configuration(filename):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", default="data/dataset")
-    parser.add_argument(
-        "--results", default="validation_results.csv"
-    )
-    parser.add_argument(
-        "--output", default="submission.csv"
-    )
+    parser.add_argument("--results", default="validation_results.csv")
+    parser.add_argument("--output", default="submission.csv")
     args = parser.parse_args()
 
     # Load the best configuration selected during validation
@@ -46,9 +41,7 @@ def main():
 
     # Load full training and test datasets
     print("Loading datasets...")
-    x_train, x_test, y_train, _, test_ids = load_csv_data(
-        args.data
-    )
+    x_train, x_test, y_train, _, test_ids = load_csv_data(args.data)
 
     # Logistic regression and ridge use labels in {0, 1}
     y_train = (y_train == 1).astype(float)
@@ -64,9 +57,7 @@ def main():
     print("Training final model...")
 
     if model == "ridge":
-        w, loss = ridge_regression(
-            y_train, tx_train, lambda_
-        )
+        w, loss = ridge_regression(y_train, tx_train, lambda_)
         scores = tx_test @ w
 
     elif model == "logistic":

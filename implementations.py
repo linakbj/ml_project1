@@ -1,9 +1,7 @@
-
 import numpy as np
 
 
 def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
-
     """
     Linear regression using gradient descent.
 
@@ -32,13 +30,12 @@ def mean_squared_error_gd(y, tx, initial_w, max_iters, gamma):
         w = w - gamma * gradient
 
     error = y - tx @ w
-    loss = np.sum(error ** 2) / (2 * n)
+    loss = np.sum(error**2) / (2 * n)
 
     return w, loss
 
 
 def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
-    
     """
     Linear regression using SGD.
 
@@ -57,14 +54,14 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
     w = initial_w.copy()
     n = len(y)
 
-    for i in range(max_iters):
+    for _ in range(max_iters):
 
-        # Randomly select one observation
-        i = np.random.randint(0, n)
+        # Randomly select one observation (mini-batch size 1)
+        idx = np.random.randint(0, n)
 
         # Extract the selected observation
-        x_i = tx[i]
-        y_i = y[i]
+        x_i = tx[idx]
+        y_i = y[idx]
 
         error = y_i - x_i @ w
         gradient = -x_i * error
@@ -73,13 +70,12 @@ def mean_squared_error_sgd(y, tx, initial_w, max_iters, gamma):
         w = w - gamma * gradient
 
     error = y - tx @ w
-    loss = np.sum(error ** 2) / (2 * n)
+    loss = np.sum(error**2) / (2 * n)
 
     return w, loss
 
 
 def least_squares(y, tx):
-    
     """
     Least squares regression using normal equations.
 
@@ -101,13 +97,12 @@ def least_squares(y, tx):
 
     # Compute final loss
     error = y - tx @ w
-    loss = np.sum(error ** 2) / (2 * len(y))
+    loss = np.sum(error**2) / (2 * len(y))
 
     return w, loss
 
 
 def ridge_regression(y, tx, lambda_):
-
     """
     Ridge regression using normal equations.
 
@@ -133,13 +128,12 @@ def ridge_regression(y, tx, lambda_):
 
     # Compute final loss without regularization
     error = y - tx @ w
-    loss = np.sum(error ** 2) / (2 * n)
+    loss = np.sum(error**2) / (2 * n)
 
     return w, loss
 
 
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
-
     """
     Logistic regression using gradient descent.
 
@@ -177,7 +171,6 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-
     """
     Regularized logistic regression using gradient descent.
 

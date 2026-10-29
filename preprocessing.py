@@ -15,9 +15,17 @@ def fit_preprocessing(x):
     minimum = np.nanmin(x, axis=0)
     maximum = np.nanmax(x, axis=0)
 
-    # Keep only non-empty, non-constant columns
-    keep = np.isfinite(minimum) & np.isfinite(maximum)
+    # Fraction of missing values in each column
+    missing_ratio = np.mean(np.isnan(x), axis=0)
+
+    # Remove columns with more than 90% missing values
+    keep = missing_ratio <= 0.90
+
+    # Also remove empty and constant columns
+    keep &= np.isfinite(minimum) & np.isfinite(maximum)
     keep &= maximum > minimum
+
+    print("Features retained:", np.sum(keep), "/", x.shape[1])
 
     x = x[:, keep].copy()
 
@@ -55,7 +63,6 @@ def apply_preprocessing(x, parameters):
 
     # Keep the same columns as in training
     x = x[:, parameters["keep"]].copy()
-
 
     rows, cols = np.where(np.isnan(x))
     x[rows, cols] = parameters["medians"][cols]

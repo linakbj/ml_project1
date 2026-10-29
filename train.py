@@ -85,7 +85,7 @@ def main():
 
     # Read command-line arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data", default="data")
+    parser.add_argument("--data", default="data/dataset")
     parser.add_argument("--max-iters", type=int, default=300)
     parser.add_argument("--gamma", type=float, default=0.01)
     args = parser.parse_args()
@@ -113,9 +113,7 @@ def main():
     del x
 
     # Evaluate a baseline that always predicts the negative class
-    baseline = compute_metrics(
-        y_validation, np.zeros_like(y_validation)
-    )
+    baseline = compute_metrics(y_validation, np.zeros_like(y_validation))
     print(
         f"Always-negative baseline: "
         f"accuracy={baseline['accuracy']:.4f}, "
@@ -127,16 +125,14 @@ def main():
 
     # Compare models and regularization parameters
     for model in ("ridge", "logistic"):
-        for lambda_ in (0.0001, 0.001, 0.01):
+        for lambda_ in (0.0, 1e-6, 1e-5, 5e-5, 1e-4, 5e-4, 1e-3, 5e-3, 1e-2):
             print(
                 f"Training {model}, lambda={lambda_}...",
                 flush=True,
             )
 
             if model == "ridge":
-                w, loss = ridge_regression(
-                    y_train, tx_train, lambda_
-                )
+                w, loss = ridge_regression(y_train, tx_train, lambda_)
                 scores = tx_validation @ w
 
             else:
@@ -155,27 +151,21 @@ def main():
                 scores = np.exp(-np.logaddexp(0, -z))
 
             if not np.isfinite(loss) or not np.all(np.isfinite(scores)):
-                raise ValueError(
-                    f"Non-finite results for {model}, lambda={lambda_}."
-                )
+                raise ValueError(f"Non-finite results for {model}, lambda={lambda_}.")
 
             # Evaluate classification thresholds on validation data
             current_results = []
 
-            for threshold in np.linspace(0.05, 0.95, 19):
+            for threshold in np.arange(0.10, 0.601, 0.01):
                 predictions = (scores >= threshold).astype(int)
                 metrics = compute_metrics(y_validation, predictions)
 
                 result = {
                     "model": model,
                     "lambda": lambda_,
-                    "threshold": float(threshold),
-                    "max_iters": (
-                        args.max_iters if model == "logistic" else ""
-                    ),
-                    "gamma": (
-                        args.gamma if model == "logistic" else ""
-                    ),
+                    "threshold": round(float(threshold), 2),
+                    "max_iters": (args.max_iters if model == "logistic" else ""),
+                    "gamma": (args.gamma if model == "logistic" else ""),
                     "training_loss": float(loss),
                     **metrics,
                 }
@@ -196,9 +186,7 @@ def main():
     results.sort(key=lambda r: r["f1"], reverse=True)
 
     with open("validation_results.csv", "w", newline="") as file:
-        writer = csv.DictWriter(
-            file, fieldnames=list(results[0])
-        )
+        writer = csv.DictWriter(file, fieldnames=list(results[0]))
         writer.writeheader()
         writer.writerows(results)
 
